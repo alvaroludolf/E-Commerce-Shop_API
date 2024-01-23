@@ -1,4 +1,5 @@
 package com.ecomerceApi.Priscila.model;
+
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -11,7 +12,6 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public enum Role {
     CUSTOMER(Set.of(
-
             Permission.CUSTOMER_READ,
             Permission.CUSTOMER_UPDATE,
             Permission.CUSTOMER_DELETE,
@@ -31,16 +31,14 @@ public enum Role {
 
     ));
 
-
-
     private final Set<Permission> permissions; // Created a set to not have duplications
 
     public List<SimpleGrantedAuthority> getAuthorities() {
         var authorities = getPermissions()
                 .stream()
                 .map(permissions -> new SimpleGrantedAuthority(permissions.getPermission()))
-                .collect (Collectors.toList());
-        authorities.add (new SimpleGrantedAuthority("ROLE_" + this.name()));
+                .collect(Collectors.toList());
+        authorities.add(new SimpleGrantedAuthority("ROLE_" + this.name()));
         return authorities;
     }
 

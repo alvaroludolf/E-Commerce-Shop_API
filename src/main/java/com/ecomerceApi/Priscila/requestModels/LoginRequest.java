@@ -1,11 +1,9 @@
 package com.ecomerceApi.Priscila.requestModels;
 
-import lombok.Data;
-import lombok.Getter;
+import lombok.Value;
 
-@Data
-@Getter
+@Value
 public class LoginRequest {
-    private String username;
-    private String password;
+    String username;
+    String password;
 }
