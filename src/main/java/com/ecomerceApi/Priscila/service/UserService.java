@@ -1,7 +1,6 @@
 package com.ecomerceApi.Priscila.service;
 
 import com.ecomerceApi.Priscila.exception.UserExistsExecption;
-import com.ecomerceApi.Priscila.exception.UserNotFoundException;
 import com.ecomerceApi.Priscila.model.User;
 import com.ecomerceApi.Priscila.repository.UserRepository;
 import com.ecomerceApi.Priscila.requestModels.UserRegistrationRequest;
@@ -14,7 +13,6 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.Map;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -25,18 +23,19 @@ public class UserService implements UserDetailsService {
     private UserRepository userRepository;
     private JwtService jwtService;
 
-    public User getUserByEmail(String email) throws UserNotFoundException {
-        Optional<User> optionalUser = userRepository.findByEmail(email);// optional annotation is explicitly handling the case where User might not be found
-        if (optionalUser.isPresent())
-            return optionalUser.get();
-        else {
-            throw new UserNotFoundException("Email not found.");
-        }
+    @Override
+    public UserDetails loadUserByUsername(String username) {
+        return userRepository.findByEmail(username)
+                .orElseThrow(() -> new UsernameNotFoundException("Email not found"));
+    }
+
+    public User getUserByEmail(String email) {
+        return userRepository.findByEmail(email)// optional annotation is explicitly handling the case where User might not be found
+                .orElseThrow(() -> new UsernameNotFoundException("Email not found"));
     }
 
     public boolean isEmailRegistered(String email) {
-        Optional<User> optionalUser = userRepository.findByEmail(email);
-        return optionalUser.isPresent();
+        return userRepository.findByEmail(email).isPresent();
     }
 
     public void register(UserRegistrationRequest request) throws UserExistsExecption {
@@ -65,9 +64,4 @@ public class UserService implements UserDetailsService {
                 .orElseThrow();
     }
 
-    @Override
-    public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        return userRepository.findByEmail(username)
-                .orElseThrow(() -> new UsernameNotFoundException("Email not found"));
-    }
 }
